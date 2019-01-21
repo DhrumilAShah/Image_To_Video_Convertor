@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'uploads')));
 var pattern = "%03d";
 var format = ".jpg";
 var convertToFormat = ".mp4";
-var emailId = 'dhrumilshah2495@gmail.com';
+var emailId = '';
 
 app.get('/', function(req, res) {
   res.render(__dirname + '/views/index.ejs');
@@ -46,17 +46,26 @@ app.get('/', function(req, res) {
 app.post('/', function(req, res) {
   var sessionId = req.session.id;
   let imageCounter = 1;
+  let audioFormat = '';
   var busboy = new Busboy({
     headers: req.headers
   });
   busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
-    console.log('Field [' + fieldname + ']: value: ' + val);
+    //console.log('Field [' + fieldname + ']: value: ' + val);
     emailId = val;
   });
   busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+    //console.log(fieldname, file, filename, encoding, mimetype);
     if (file) {
-      let zeros = (imageCounter > 9 && imageCounter < 100) ? "0" : (imageCounter > 99) ? "" : "00";
-      fileName = sessionId + zeros + (imageCounter++) + '.jpg';
+      if (fieldname == "images") {
+        let zeros = (imageCounter > 9 && imageCounter < 100) ? "0" : (imageCounter > 99) ? "" : "00";
+        fileName = sessionId + zeros + (imageCounter++) + '.jpg';
+      } else {
+        format = filename.split(".");
+        audioFormat = format[format.length - 1];
+        fileName = sessionId + "." + format[format.length - 1];
+      }
+      //console.log(fileName);
       stream = __dirname + '/uploads/' + fileName;
       fstream = fs.createWriteStream(stream);
       file.pipe(fstream);
@@ -69,9 +78,9 @@ app.post('/', function(req, res) {
       let zeros = (i > 9 && i < 100) ? "0" : (i > 99) ? "" : "00";
       imageEdit.resize(__dirname + '/uploads/' + sessionId + zeros + i + '.jpg', 1024, 512);
     }
-    ffmpeg.makeVideo(__dirname + '/uploads/', sessionId, pattern, "jpg", "mp4")
+    ffmpeg.makeVideo(__dirname + '/uploads/', sessionId, pattern, "jpg", "mp4", audioFormat)
       .then((videoDir) => {
-        console.log(emailId);
+        //console.log(emailId);
         email.send(emailId, sessionId).then((data) => {
           res.writeHead(200, {
             'Connection': 'close'
