@@ -1,7 +1,7 @@
 var nodemailer = require("nodemailer");
 var constants = require("./constants");
-var send = (id,sessionId) => {
-  return new Promise((resolve,reject) => {
+var send = (id, sessionId) => {
+  return new Promise((resolve, reject) => {
     var transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -14,10 +14,10 @@ var send = (id,sessionId) => {
       from: constants.fromEmail,
       to: id,
       subject: constants.emailSubject,
-      html: "<br><a href='http://"+constants.host+":"+constants.port+"/video?id="+sessionId+"'>Click the link to view your video</a>"
+      html: "<br><a href='http://" + constants.host + ":" + constants.port + "/video?id=" + sessionId + "'>Click the link to view your video</a>"
     };
 
-    transporter.sendMail(mailOptions, function(error, info){
+    transporter.sendMail(mailOptions, function(error, info) {
       if (error) {
         reject(error);
       } else {
@@ -31,6 +31,6 @@ var send = (id,sessionId) => {
 
 //send('dhrumilshah2495@gmail.com','gk1sCpZlkOPeWA9rYA7Shk_XvaIwkG1i').then((data)=>{console.log(data)}).catch((data)=>{console.log(data)});
 
-module.exports={
-  send : send
+module.exports = {
+  send: send
 }
