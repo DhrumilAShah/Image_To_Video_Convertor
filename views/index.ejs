@@ -2,10 +2,39 @@
 <head></head>
 <body>
            <form method="POST" action="/"  enctype="multipart/form-data">
-            <br>Email: <input type="text" name="email"><br><br>
-            Select images: <input type="file" name="images" multiple><br><br>
+            <br>Email: <input type="text" name="email" required><br><br>
+            Select images: <input type="file" name="images" id="imageFile" onchange="fileFunction()" multiple required><br><br>
             Select audio: <input type="file" name="music"><br><br>
             <input type="submit">
           </form>
+          <p id="demo"></p>
 </body>
+<script>
+function fileFunction(){
+  var x = document.getElementById("imageFile");
+  var txt = "";
+  if ('files' in x) {
+    if (x.files.length == 0) {
+      txt = "Select one or more files.";
+    } else {
+      for (var i = 0; i < x.files.length; i++) {
+        txt += "<br>File " + (i+1)+" : ";
+        var file = x.files[i];
+        if ('name' in file) {
+          txt += file.name + "<br>";
+        }
+      }
+    }
+  } else {
+      if (x.value == "") {
+        txt += "Select one or more files.";
+      } else {
+        txt += "The files property is not supported by your browser!";
+        txt  += "<br>The path of the selected file: " + x.value; // If the browser does not support the files property, it will return the path of the selected file instead.
+      }
+  }
+  document.getElementById("demo").innerHTML = txt;
+}
+
+</script>
 </html>
